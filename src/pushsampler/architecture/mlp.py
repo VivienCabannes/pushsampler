@@ -65,6 +65,7 @@ class MLP(nn.Module):
             nl = getattr(self, "nls" + str(i))
             x = nl(fc(x))
             x = F.leaky_relu(x)
+            # x = F.relu(x)
         x = self.fco(x)
         return x
 
