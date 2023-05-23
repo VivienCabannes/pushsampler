@@ -42,7 +42,8 @@ set_all_seed(42)
 a, b = 0, 1
 
 nb_epochs = 5000
-batch_size = 10
+# batch_size = 100
+batch_size = 1
 contrastive = True
 
 linear_net = False
@@ -51,15 +52,15 @@ if linear_net:
     net = LinearMap(fan_in=1, fan_out=1)
 else:
     net = MLP([1, 200, 200, 2000, 200, 1], layer_norm="none")
-    # net = MLP([1, 200, 200, 20, 1], layer_norm="none")
 
-# optimizer = optim.SGD(net.parameters(), lr=1e-1, momentum=0)
-optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.5)
 # Linear scheduler
-scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nb_epochs // 3, gamma=0.1)
+# scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=nb_epochs // 3, gamma=0.1)
 
 # x = torch.rand(2 * batch_size, 1)
-t = torch.linspace(0.01, 10, 100)
+# t = torch.linspace(0.01, 10, 100)
+t = torch.linspace(1, 10, 10)
+t = 2 * np.pi * t
 for i in range(nb_epochs):
     optimizer.zero_grad()
 
@@ -96,6 +97,7 @@ for i in range(nb_epochs):
 
     loss.backward()
     optimizer.step()
+    # scheduler.step()
 
 
 x = torch.linspace(-5, 5, 100).unsqueeze(1)
@@ -110,7 +112,19 @@ fig, ax = plt.subplots()
 a, = ax.plot(x / np.sqrt(2), 2 * y - 1)
 b, = ax.plot(x / np.sqrt(2), erf(x / np.sqrt(2)), "--")
 ax.grid()
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$CDF(x)$")
 fig.savefig("cdf.pdf", bbox_inches="tight")
+
+fig, ax = plt.subplots()
+a, = ax.plot(x / np.sqrt(2), -2 * y + 1)
+b, = ax.plot(x / np.sqrt(2), erf(x / np.sqrt(2)), "--")
+ax.grid()
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$CDF(x)$")
+fig.savefig("cdf_reversed.pdf", bbox_inches="tight")
 
 fig, ax = plt.subplots()
 ax.legend([a, b], ["learned CDF", "ground truth"])
