@@ -3,6 +3,7 @@ __pycache__/
 
 
 launchers/
-notebooks/
+# notebooks/
 
 *_old/
+*.pdf
